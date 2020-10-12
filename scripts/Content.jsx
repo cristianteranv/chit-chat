@@ -4,13 +4,14 @@ import * as React from 'react';
 
 import { Button } from './Button';
 import { Socket } from './Socket';
+import { List } from './List'
 
 export function Content() {
     const [addresses, setAddresses] = React.useState([]);
     
     function getNewAddresses() {
         React.useEffect(() => {
-            Socket.on('addresses received', updateAddresses);
+            Socket.on('new message', updateAddresses);
             return () => {
                 Socket.off('addresses received', updateAddresses);
             }
@@ -26,12 +27,8 @@ export function Content() {
 
     return (
         <div>
-            <h1>USPS Addresses!</h1>
-                <ol>
-                    {
-                    // TODO
-                    }
-                </ol>
+            <h1>List of messages:</h1>
+                <List />
             <Button />
         </div>
     );

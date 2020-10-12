@@ -40,9 +40,10 @@ def emit_all_addresses(channel):
 
 @socketio.on('connect')
 def on_connect():
+    #New user
     print('Someone connected!')
     socketio.emit('connected', {
-        'test': 'Connected'
+        'usrname': 'Connected' #send user name
     })
     
     # TODO
@@ -52,11 +53,10 @@ def on_connect():
 def on_disconnect():
     print ('Someone disconnected!')
 
-@socketio.on('new address input')
-def on_new_address(data):
+@socketio.on('new msg')
+def on_new_msg(data):
     print("Got an event for new address input with data:", data)
-    
-    db.session.add(models.Usps(data["address"]));
+    db.session.add( models.Texts( data["address"], data["user"] ) );
     db.session.commit();
     
     emit_all_addresses(ADDRESSES_RECEIVED_CHANNEL)
