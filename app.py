@@ -7,7 +7,7 @@ import flask_sqlalchemy
 import flask_socketio
 import models 
 
-ADDRESSES_RECEIVED_CHANNEL = 'addresses received'
+ADDRESSES_RECEIVED_CHANNEL = 'messages received'
 
 app = flask.Flask(__name__)
 
@@ -34,19 +34,21 @@ db.app = app
 db.create_all()
 db.session.commit()
 
-def emit_all_addresses(channel):
-    # TODO
-    print("TODO")
+def emit_all_messages(channel):
+    allMessages = [ \
+        db_text.text for db_text in db.session.query(models.Texts).all()
+        ]
+    socketio.emit( channel, { 'allMessages': allMessages })
+    print("Emitted")
 
 @socketio.on('connect')
 def on_connect():
-    #New user
+    idnum = socketio.id
     print('Someone connected!')
     socketio.emit('connected', {
-        'usrname': 'Connected' #send user name
+        'usrname': idnum #send user name
     })
-    
-    # TODO
+    emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
     
 
 @socketio.on('disconnect')
@@ -59,11 +61,11 @@ def on_new_msg(data):
     db.session.add( models.Texts( data["address"], data["user"] ) );
     db.session.commit();
     
-    emit_all_addresses(ADDRESSES_RECEIVED_CHANNEL)
+    emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
 
 @app.route('/')
 def index():
-    emit_all_addresses(ADDRESSES_RECEIVED_CHANNEL)
+    emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
 
     return flask.render_template("index.html")
 
