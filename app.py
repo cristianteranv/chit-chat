@@ -35,21 +35,28 @@ db.session.commit()
 
 def emit_all_messages(channel):
     allMessages = [ \
-        db_text.text for db_text in db.session.query(models.Texts).all()]
-    print("all messages in emit all: ", allMessages)
+        {'message': db_texts.text, 'usrname' : db_users.name}\
+        for db_texts, db_users in \
+        db.session.query(models.Texts,models.Users).filter(models.Texts.user == models.Users.id).all()\
+        ]
+    
     socketio.emit( channel, { 'allMessages': allMessages })
     print("Emitted")
 
+# db.session.query(Deliverable.column1, BatchInstance.column2).\
+#     join(BatchInstance, Service, Supplier, SupplierUser). \
+#     filter(SupplierUser.username == str(current_user)).\
+#     order_by(Deliverable.created_time.desc()).all()
+    
 @socketio.on('connect')
 def on_connect():
     currSocketId = request.sid
     db.session.add( models.Users(currSocketId))
     db.session.commit()
-    #use as name
     print('Someone connected with id: ', currSocketId)
     socketio.emit('connected', {
-        'usrname': currSocketId #send user name
-    }, room= currSocketId)
+        'usrname': currSocketId
+    }, room = currSocketId)
     emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
     
 

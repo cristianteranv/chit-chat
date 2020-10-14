@@ -33,7 +33,7 @@ export function Button(props) {
     return (
         <form onSubmit={handleSubmit}>
             <Input id="textInput"/>
-            <button>Send</button>
+            <button id="sendButton">Send</button>
         </form>
     );
 }

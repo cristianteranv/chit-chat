@@ -3,6 +3,6 @@ import React from "react"
 export function ListItem (props){
     
     return (
-        <li>{props.value}</li>
+        <li>{props.text} sent by: {props.username}</li>
     )
 }
