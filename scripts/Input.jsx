@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Socket } from './Socket';
 
-export function Input() {
+export function Input(props) {
     
     function onKeyPress (e) {
         if(e.which === 13) {
@@ -10,6 +10,6 @@ export function Input() {
     }
     
     return (
-        <input id="textInput" type="text" onKeyPress={onKeyPress}/>
+        <input id={props.id} type="text" onKeyPress={onKeyPress}/>
     );
 }

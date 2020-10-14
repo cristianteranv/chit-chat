@@ -8,10 +8,25 @@ import { List } from './List'
 
 export function Content() {
     const [messages, setMessages] = React.useState([]);
+    const [username, setUsername] = React.useState();
+    
+    function getUsername() {
+        React.useEffect(()=>{
+            Socket.on('connected', updateUsername)
+            return () => {
+                Socket.off('connected', updateUsername)
+            }
+        })
+    }
+    
+    function updateUsername(data){
+        console.log("Received user name from server: ", data['usrname'])
+        setUsername(data['usrname'])
+    }
     
     function getNewAddresses() {
         React.useEffect(() => {
-            Socket.on('new message', updateAddresses);
+            Socket.on('messages received', updateAddresses);
             return () => {
                 Socket.off('messages received', updateAddresses);
             }
@@ -19,17 +34,19 @@ export function Content() {
     }
     
     function updateAddresses(data) {
-        console.log("Received addresses from server: " + data['allAddresses']);
-        setMessages(data['allAddresses']);
+        console.log("Received addresses from server: " + data['allMessages']);
+        setMessages(data['allMessages']);
     }
     
+    getUsername()
     getNewAddresses();
 
     return (
         <div>
             <h1>List of messages:</h1>
-                <List arr={messages} />
-            <Button />
+            <div>You are: {username}</div>
+            <List arr={messages} />
+            <Button username={username} />
         </div>
     );
 }

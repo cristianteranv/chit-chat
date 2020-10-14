@@ -4,9 +4,9 @@ from app import db
 from datetime import datetime
 
 
-class User(db.Model):
+class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), nullable=False)
+    name = db.Column(db.String(35), nullable=False)
     
     def __init__(self, name):
         self.name = name
@@ -16,9 +16,9 @@ class User(db.Model):
 
 class Texts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.Text)
+    text = db.Column(db.String(300))
     date = db.Column(db.DateTime, default=datetime.now)
-    user = db.Column(db.String(30), db.ForeignKey('user.id'))
+    user = db.Column(db.Integer, db.ForeignKey('users.id'))
     
     def __init__(self, text, user):
         self.text = text

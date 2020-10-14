@@ -6,19 +6,33 @@ function handleSubmit(event) {
     var textInput = document.getElementById("textInput").value
     console.log('handleSubmit.. Received new text from input element: ', textInput);
     
-    Socket.emit('new message', {
+    Socket.emit('new msg', {
         'message': textInput,
     });
     
-    console.log('handleSubmit.. Just emitted grocery' + textInput + ' to the server.');
+    console.log('handleSubmit.. Just emitted message ' + textInput + ' to the server.');
     document.getElementById("textInput").value = ""
     event.preventDefault();
 }
 
-export function Button() {
+export function Button(props) {
+    function handleSubmit(event) {
+        var textInput = document.getElementById("textInput").value
+        console.log('handleSubmit.. Received new text from input element: ', textInput);
+    
+        Socket.emit('new msg', {
+            'message': textInput,
+            'usrname': props.username
+        });
+    
+        console.log('handleSubmit.. Just emitted message ' + textInput + ' to the server.');
+        document.getElementById("textInput").value = ""
+        event.preventDefault();
+    }
+
     return (
         <form onSubmit={handleSubmit}>
-            <Input id="sendButton" placeholder="Your message here.."/>
+            <Input id="textInput"/>
             <button>Send</button>
         </form>
     );
