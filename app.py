@@ -25,7 +25,9 @@ sql_user = os.environ['SQL_USER']
 sql_pwd = os.environ['SQL_PASSWORD']
 dbuser = os.environ['USER']
 
-database_uri = 'postgresql://{}:{}@localhost/postgres'.format(sql_user, sql_pwd)
+database_uri = os.getenv('DATABASE_URL') 
+
+#'postgresql://{}:{}@localhost/postgres'.format(sql_user, sql_pwd)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
 
@@ -131,7 +133,7 @@ def on_new_msg(data):
             emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
         
         elif command == "help":
-            jokeMsg = "The commands I currently support are: !!Chuck, !!funstranslate messageToBeTranslated, !!about"
+            jokeMsg = "The commands I currently support are: !!Chuck, !!funstranslate messageToBeTranslated, !!about, and !!clear"
             db.session.add( models.Texts( jokeMsg, jokebot.id ) );
             db.session.commit()
             emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
