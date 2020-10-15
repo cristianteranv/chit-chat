@@ -21,13 +21,7 @@ socketio.init_app(app, cors_allowed_origins="*")
 dotenv_path = join(dirname(__file__), 'sql.env')
 load_dotenv(dotenv_path)
 
-# sql_user = os.environ['SQL_USER']
-# sql_pwd = os.environ['SQL_PASSWORD']
-# dbuser = os.environ['USER']
-
 database_uri = os.getenv('DATABASE_URL') 
-
-#'postgresql://{}:{}@localhost/postgres'.format(sql_user, sql_pwd)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
 
@@ -45,9 +39,7 @@ def emit_all_messages(channel):
         for db_texts, db_users in \
         db.session.query(models.Texts,models.Users).filter(models.Texts.user == models.Users.id).order_by(models.Texts.date).all()\
         ]
-    
     socketio.emit( channel, { 'allMessages': allMessages })
-    print("Emitted")
 
 # db.session.query(Deliverable.column1, BatchInstance.column2).\
 #     join(BatchInstance, Service, Supplier, SupplierUser). \
@@ -79,14 +71,12 @@ def on_disconnect():
 
 @socketio.on('new msg')
 def on_new_msg(data):
-    print("Server new msg received:", data)
-    print("Message received from: ", data['usrname'])
+    print("Message \' {} \' received from: ".format(data['message']), data['usrname'])
     #check the message for command
     message = data['message']
     if message.startswith("!!"):
         jokebot = models.Users.query.filter_by(name="jokebot").first()
         #about, help, funtranslate, unrecognized command, some command, some api
-        print("Received a bot command")
         command = message[2:]
         if command == "Chuck":
             userquery = models.Users.query.filter_by(name=data['usrname']).first()
@@ -111,17 +101,14 @@ def on_new_msg(data):
             db.session.add( models.Texts( data["message"], userquery.id ) );
             message = command.split()
             message = " ".join(message[1:])
-            print("message to fun translate: {}".format(message))
             url = "https://api.funtranslations.com/translate/yoda.json"
             response = requests.post('https://api.funtranslations.com/translate/yoda.json', data = {'text':message})
             jokeMsg = ""
             try:
-                print("Funtranslate response: ", response)
                 jokeMsg = response.json()['contents']['translated']
-                print("Translated text: ", jokeMsg)
             except:
                 jokeMsg = "We seem to have ran out of funtranslations requests"
-                print("error")
+                print("error with fun translate")
             db.session.add( models.Texts( jokeMsg, jokebot.id ) );
             db.session.commit()
             emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
@@ -144,7 +131,7 @@ def on_new_msg(data):
                 db.session.commit()
                 emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
             except:
-                print("error")
+                print("error when clearing texts table")
         
         else:
             jokeMsg = "Beep boop I haven't been programmed to respond to that command beep boop."

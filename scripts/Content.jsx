@@ -34,13 +34,15 @@ export function Content() {
     }
     
     function updateUsername(data){
-        console.log("Received user name from server: ", data['usrname']);
+        //console.log("Received user name from server: ", data['usrname']);
         setUsername(data['usrname']);
     }
     
     function getNewAddresses() {
         React.useEffect(() => {
             Socket.on('messages received', updateAddresses);
+            var elem = document.getElementById('chatContainer');
+            elem.scrollTop = elem.scrollHeight;
             return () => {
                 Socket.off('messages received', updateAddresses);
             };
@@ -48,7 +50,7 @@ export function Content() {
     }
     
     function updateAddresses(data) {
-        console.log("Received addresses from server: " + data['allMessages']);
+        //console.log("Received addresses from server: " + data['allMessages']);
         setMessages(data['allMessages']);
     }
     

@@ -14,8 +14,23 @@ export function List(props){
         }
     })
     
+    // var scrolled = false;
+    // function updateScroll(){
+    //     if(!scrolled){
+    //         var element = document.getElementById("chatContainer");
+    //         console.log(element);
+    //         element.scrollTop = element.scrollHeight;
+    //     }
+    // }
+    
+    // function setScroll(){
+    //     scrolled = true;
+    // }
+    
+    // updateScroll();
+    
     return (
-        <div className="chat">
+        <div className="chat" id="chatContainer" >
             {LIs}
         </div>
     )
