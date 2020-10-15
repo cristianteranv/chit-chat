@@ -88,8 +88,8 @@ socket.emit(channel, thingToSend, room=sid). By specifying the room as the sid y
 Another thing that was a little challengin was the styling. The way I overcame this was with google lol. First, the important part for the chat was finding an element that would contain
 the chat messages. Found out the most used element was a div. Furthermore, the most common element used for messages were also divs. Googling around I found some styling for messages
 and found a way to give proper classes to div elements based on if the client was the one that sent the message or if it was someone else. In List.jsx, I straight up pass the className
-as a prop so that I don't have to figure out which className to give inside the ListItem. Although confusing List and ListItem are not <ul> and <li> respectively
-but just <div>s that I changed last second for better functionality with the styling I found online
+as a prop so that I don't have to figure out which className to give inside the ListItem. Although confusing List and ListItem are not ul and li respectively
+but just divs that I changed last second for better functionality with the styling I found online
 
 Finally, another big issue I had was figuring out how SQLAlchemy works. The way I solved this was again, just googling. I gotta say that the answers to the questions I had were all very straight forward.
 It was not confusing at all to understand how some methods and functions were working just by looking at the code I found online. https://flask-sqlalchemy.palletsprojects.com/en/2.x/ was a great source
