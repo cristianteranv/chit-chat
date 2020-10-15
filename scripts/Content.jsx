@@ -9,19 +9,33 @@ import { List } from './List'
 export function Content() {
     const [messages, setMessages] = React.useState([]);
     const [username, setUsername] = React.useState();
+    const [count, setCount] = React.useState(0);
+    
+    function getNewCount() {
+        React.useEffect(()=>{
+            Socket.on('count', updateCount);
+            return () => {
+                Socket.off('count', updateCount);
+            };
+        });
+    }
+    
+    function updateCount(data){
+        setCount( data['count'] );
+    }
     
     function getUsername() {
         React.useEffect(()=>{
-            Socket.on('connected', updateUsername)
+            Socket.on('connected', updateUsername);
             return () => {
-                Socket.off('connected', updateUsername)
-            }
-        })
+                Socket.off('connected', updateUsername);
+            };
+        });
     }
     
     function updateUsername(data){
-        console.log("Received user name from server: ", data['usrname'])
-        setUsername(data['usrname'])
+        console.log("Received user name from server: ", data['usrname']);
+        setUsername(data['usrname']);
     }
     
     function getNewAddresses() {
@@ -29,7 +43,7 @@ export function Content() {
             Socket.on('messages received', updateAddresses);
             return () => {
                 Socket.off('messages received', updateAddresses);
-            }
+            };
         });
     }
     
@@ -38,13 +52,15 @@ export function Content() {
         setMessages(data['allMessages']);
     }
     
-    getUsername()
+    getUsername();
     getNewAddresses();
+    getNewCount();
 
     return (
         <div>
             <h1>List of messages:</h1>
-            <div>You are: {username}</div>
+            <div>You are: {username}.</div>
+            <div>There are {count} users connected.</div>
             <List arr={messages} />
             <Button username={username} />
         </div>

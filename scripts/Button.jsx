@@ -2,18 +2,6 @@ import * as React from 'react';
 import { Socket } from './Socket';
 import { Input } from './Input';
 
-function handleSubmit(event) {
-    var textInput = document.getElementById("textInput").value
-    console.log('handleSubmit.. Received new text from input element: ', textInput);
-    
-    Socket.emit('new msg', {
-        'message': textInput,
-    });
-    
-    console.log('handleSubmit.. Just emitted message ' + textInput + ' to the server.');
-    document.getElementById("textInput").value = ""
-    event.preventDefault();
-}
 
 export function Button(props) {
     function handleSubmit(event) {
