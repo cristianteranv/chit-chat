@@ -61,7 +61,7 @@ export function Content() {
             <h1>List of messages:</h1>
             <div>You are: {username}.</div>
             <div>There are {count} users connected.</div>
-            <List arr={messages} />
+            <List arr={messages} user={username} />
             <Button username={username} />
         </div>
     );
