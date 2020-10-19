@@ -45,9 +45,9 @@
 
   
 # For Chuck Norris and the funtranslate API
-    Funtranslate does not require you to have an API key but it will limit your usage to 5 requests per hour or something along those lines, so you don't need to do anything here.
-    For Chuck Norris API head to rapidapi.com register for an account, look for the Chuck Norris API and replace the x-rapidapi-key inside app.py with the key you will see in your browser.
-    Because the Chuck Norris API is free, there shouldn't be any issue with just putting your key as a string literal inside app.py without using a .env file.
+Funtranslate does not require you to have an API key but it will limit your usage to 5 requests per hour or something along those lines, so you don't need to do anything here.
+For Chuck Norris API head to rapidapi.com register for an account, look for the Chuck Norris API and replace the x-rapidapi-key inside app.py with the key you will see in your browser.
+Because the Chuck Norris API is free, there shouldn't be any issue with just putting your key as a string literal inside app.py without using a .env file.
   
   
 # Enabling read/write from SQLAlchemy  
