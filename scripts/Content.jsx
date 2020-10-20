@@ -79,7 +79,6 @@ export function Content() {
     getNewAddresses();
     getNewCount();
     getUsername();
-    console.log("outside func ", isLoggedIn);
     
     return (
         <div>

@@ -9,6 +9,13 @@ import flask
 import flask_sqlalchemy
 import flask_socketio
 import models
+import re 
+  
+def Find(string): 
+    regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+    url = re.findall(regex, string)      
+    return [x[0] for x in url]
+
 
 ADDRESSES_RECEIVED_CHANNEL = 'messages received'
 user_count = 0
@@ -32,7 +39,7 @@ db.app = app
 db.create_all()
 db.session.commit()
 
-def push_new_user_to_db(name, auth_type, email, authId):
+def push_new_user_to_db(name, auth_type, email, authId, imgUrl=None):
     user = models.Users.query.filter_by(name=name, email=email).first()
     if not user:
         print("adding new user")
@@ -88,9 +95,8 @@ def on_new_google_user(data):  #Sends username and userId to client.
     user_count += 1
     socketio.emit('count', {'count': user_count})
     print("Got an event for new google user input with data:", data)
-    push_new_user_to_db(data['name'], models.AuthUserType.GOOGLE, data['email'], data['uid'])
+    push_new_user_to_db(data['name'], models.AuthUserType.GOOGLE, data['email'], data['uid'], imgUrl=data['imgUrl'])
     user = models.Users.query.filter_by(name=data['name'], email=data['email']).first()
-    print("userId:", user.id)
     socketio.emit('send username', {'username': data['name'], 'userId': user.id}, room=data['socketId'])
 
 @socketio.on('new msg')

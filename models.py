@@ -11,7 +11,7 @@ class Users(db.Model):
     email = db.Column(db.String(100))
     googleId = db.Column(db.String())
     fbId = db.Column(db.String())
-    #imgUrl
+    imgUrl = db.Column(db.String())
     
     def __init__(self, name, email, googleId=None, fbId=None):
         self.name = name
