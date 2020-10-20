@@ -32,10 +32,27 @@ db.app = app
 db.create_all()
 db.session.commit()
 
+def push_new_user_to_db(name, auth_type, email, authId):
+    user = models.Users.query.filter_by(name=name, email=email).first()
+    if not user:
+        print("adding new user")
+        print("auth type", auth_type, "models.authuser.google ", models.AuthUserType.GOOGLE)
+        if auth_type == models.AuthUserType.GOOGLE:
+            db.session.add(models.Users(name, email, googleId = authId));
+        else:
+            db.session.add(models.Users(name, email, fbId = authId));
+        db.session.commit();
+        return True
+#        emit_all_oauth_users(USERS_UPDATED_CHANNEL)
+    else:
+        print("user was already stored")
+        #add new auth type if needed
+        #if not user.googleId and auth_type == google:  db.UPDATE.SET(googleId=authId)
+        return False
 
-def emit_all_messages(channel):
+def emit_all_messages(channel): #TODO query imgUrl
     allMessages = [ \
-        {'message': db_texts.text, 'usrname' : db_users.name}\
+        {'message': db_texts.text, 'userId' : db_users.id, 'username': db_users.name}\
         for db_texts, db_users in \
         db.session.query(models.Texts,models.Users).filter(models.Texts.user == models.Users.id).order_by(models.Texts.date).all()\
         ]
@@ -46,41 +63,51 @@ def emit_all_messages(channel):
 #     filter(SupplierUser.username == str(current_user)).\
 #     order_by(Deliverable.created_time.desc()).all()
     
-@socketio.on('connect')
+@socketio.on('connect')   #sends socketId to client and message history
 def on_connect():
     global user_count
-    user_count += 1
+    socketio.emit('count', {'count': user_count})
     currSocketId = request.sid
-    db.session.add( models.Users(currSocketId))
-    db.session.commit()
     print('Someone connected with id: ', currSocketId)
     socketio.emit('connected', {
-        'usrname': currSocketId
+        'socketId': currSocketId
     }, room = currSocketId)
-    
-    socketio.emit('count', {'count': user_count})
     emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
     
 
 @socketio.on('disconnect')
-def on_disconnect():
-    global user_count
-    user_count -= 1
-    socketio.emit('count', {'count': user_count})
+def on_disconnect():                #TODO HANDLE LOGOUT
+    # global user_count
+    # user_count -= 1
+    # socketio.emit('count', {'count': user_count})
     print ('Someone disconnected!')
+
+@socketio.on('googleAuth')     #receives data from GoogleButton. Updates user count. Creates/Updates user row in db. 
+def on_new_google_user(data):  #Sends username and userId to client.
+    global user_count
+    user_count += 1
+    socketio.emit('count', {'count': user_count})
+    print("Got an event for new google user input with data:", data)
+    push_new_user_to_db(data['name'], models.AuthUserType.GOOGLE, data['email'], data['uid'])
+    user = models.Users.query.filter_by(name=data['name'], email=data['email']).first()
+    print("userId:", user.id)
+    socketio.emit('send username', {'username': data['name'], 'userId': user.id}, room=data['socketId'])
 
 @socketio.on('new msg')
 def on_new_msg(data):
-    print("Message \' {} \' received from: ".format(data['message']), data['usrname'])
+    print("Message \'{}\' received from: {} with userId: {}".format(data['message'], data['usrname'], data['userId']))
     #check the message for command
     message = data['message']
     if message.startswith("!!"):
         jokebot = models.Users.query.filter_by(name="jokebot").first()
+        if not jokebot:
+            db.session.add( models.Users(name = 'jokebot', email='jokebot'))
+            db.session.commit()
+            jokebot = models.Users.query.filter_by(name="jokebot").first()
         #about, help, funtranslate, unrecognized command, some command, some api
         command = message[2:]
         if command == "Chuck":
-            userquery = models.Users.query.filter_by(name=data['usrname']).first()
-            db.session.add( models.Texts( data["message"], userquery.id ) );
+            db.session.add( models.Texts( data["message"], data['userId'] ) );
             #db.session.commit()
             url = "https://matchilling-chuck-norris-jokes-v1.p.rapidapi.com/jokes/random"
             headers = {
@@ -93,12 +120,10 @@ def on_new_msg(data):
             print(joke, jokebot.id)
             db.session.add( models.Texts( joke, jokebot.id ) );
             db.session.commit()
-            print("here")
             emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
         
         elif command.startswith("funtranslate"):
-            userquery = models.Users.query.filter_by(name=data['usrname']).first()
-            db.session.add( models.Texts( data["message"], userquery.id ) );
+            db.session.add( models.Texts( data["message"], data['userId'] ) );
             message = command.split()
             message = " ".join(message[1:])
             url = "https://api.funtranslations.com/translate/yoda.json"
@@ -140,8 +165,7 @@ def on_new_msg(data):
             emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
         
     else:  
-        userquery = models.Users.query.filter_by(name=data['usrname']).first()
-        db.session.add( models.Texts( data["message"], userquery.id ) );
+        db.session.add( models.Texts( data["message"], data["userId"] ) );
         db.session.commit();
         emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
 

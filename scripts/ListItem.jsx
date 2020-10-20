@@ -5,7 +5,8 @@ export function ListItem (props){
     return (
         <div className="messages">
             <div className={props.styleClass}>
-                {props.text} sent by: {props.username}. Owner: {props.styleClass}
+                <div>Sent by: {props.username}. Style: {props.styleClass}</div>
+                <div>{props.text}</div>
             </div>
         </div>
     )

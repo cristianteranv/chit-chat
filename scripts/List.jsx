@@ -3,14 +3,14 @@ import { ListItem } from "./ListItem"
 
 export function List(props){
     const LIs = props.arr.map((item, index) => {
-        if (props.user == item['usrname']){
-            return <ListItem key={index} text={item['message']} username={item['usrname']} styleClass="mine message"/>
+        if (props.userId == item['userId']){
+            return <ListItem key={index} text={item['message']} username={item['username']} styleClass="mine message"/>
         }
         else if (item['usrname'] == "jokebot"){
-            return <ListItem key={index} text={item['message']} username={item['usrname']} styleClass="jokebot message"/>
+            return <ListItem key={index} text={item['message']} username={item['username']} styleClass="jokebot message"/>
         }
         else{
-            return <ListItem key={index} text={item['message']} username={item['usrname']} styleClass="yours message"/>
+            return <ListItem key={index} text={item['message']} username={item['username']} styleClass="yours message"/>
         }
     })
     

@@ -10,7 +10,8 @@ export function Button(props) {
     
         Socket.emit('new msg', {
             'message': textInput,
-            'usrname': props.username
+            'usrname': props.username,
+            'userId': props.userId
         });
     
         console.log('handleSubmit.. Just emitted message ' + textInput + ' to the server.');

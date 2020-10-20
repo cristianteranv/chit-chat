@@ -1,16 +1,21 @@
-    
+
 import * as React from 'react';
 
 
 import { Button } from './Button';
 import { Socket } from './Socket';
-import { List } from './List'
+import { List } from './List';
+import { GoogleButton } from './GoogleButton';
 
 export function Content() {
     const [messages, setMessages] = React.useState([]);
+    const [socketId, setSocketId] = React.useState();
+    const [count, setCount] = React.useState();
     const [username, setUsername] = React.useState();
-    const [count, setCount] = React.useState(0);
-    
+    const [userId, setUserId] = React.useState();
+    const [isLoggedIn, setLogin] = React.useState(false);
+    const [imgUrl, setImgUrl] = React.useState();
+
     function getNewCount() {
         React.useEffect(()=>{
             Socket.on('count', updateCount);
@@ -19,25 +24,41 @@ export function Content() {
             };
         });
     }
-    
+
     function updateCount(data){
         setCount( data['count'] );
     }
-    
+
     function getUsername() {
         React.useEffect(()=>{
-            Socket.on('connected', updateUsername);
+            Socket.on('send username', updateUsername);
             return () => {
-                Socket.off('connected', updateUsername);
+                Socket.off('send username', updateUsername);
             };
         });
     }
-    
+
     function updateUsername(data){
-        //console.log("Received user name from server: ", data['usrname']);
-        setUsername(data['usrname']);
+        setUsername( data['username'] );
+        setUserId( data['userId'] );
+        setLogin( true );
+        setImgUrl( data['imgUrl']);
     }
-    
+
+    function getSocketId() {
+        React.useEffect(()=>{
+            Socket.on('connected', updateSocketId);
+            return () => {
+                Socket.off('connected', updateSocketId);
+            };
+        });
+    }
+
+    function updateSocketId(data){
+        //console.log("Received user name from server: ", data['usrname']);
+        setSocketId(data['socketId']);
+    }
+
     function getNewAddresses() {
         React.useEffect(() => {
             Socket.on('messages received', updateAddresses);
@@ -48,23 +69,30 @@ export function Content() {
             };
         });
     }
-    
+
     function updateAddresses(data) {
         //console.log("Received addresses from server: " + data['allMessages']);
         setMessages(data['allMessages']);
     }
-    
-    getUsername();
+
+    getSocketId();
     getNewAddresses();
     getNewCount();
-
+    getUsername();
+    console.log("outside func ", isLoggedIn);
+    
     return (
         <div>
+            <GoogleButton socketId={socketId} />
             <h1>List of messages:</h1>
-            <div>You are: {username}.</div>
+            <div>Your socketId: {socketId}.</div>
+            <div>Your username: {username}. Your userId: {userId}</div>
             <div>There are {count} users connected.</div>
-            <List arr={messages} user={username} />
-            <Button username={username} />
+            <List arr={messages} user={username} userId={userId}/>
+            {isLoggedIn ?
+            <Button username={username} userId={userId} />
+            : <h1>You need to log in before you can chat!</h1>
+            }
         </div>
     );
 }
