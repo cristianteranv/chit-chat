@@ -13,13 +13,15 @@ class Users(db.Model):
     fbId = db.Column(db.String())
     imgUrl = db.Column(db.String())
     
-    def __init__(self, name, email, googleId=None, fbId=None):
+    def __init__(self, name, email, imgUrl=None, googleId=None, fbId=None):
         self.name = name
         self.email = email
         if googleId:
             self.googleId = googleId
         if fbId:
             self.fbId = fbId
+        if imgUrl:
+            self.imgUrl = imgUrl
     
     def __repr__(self):
         return "<User: {}>".format(self.name)

@@ -2,6 +2,11 @@ import React from "react"
 
 export function ListItem (props){
     
+    // {props.imgUrl?
+    //         <img src={props.imgUrl}/>
+    //         :<div>NI</div>
+    //         }
+    
     return (
         <div className="messages">
             <div className={props.styleClass}>

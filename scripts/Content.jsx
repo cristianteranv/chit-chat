@@ -85,9 +85,9 @@ export function Content() {
             <GoogleButton socketId={socketId} />
             <h1>List of messages:</h1>
             <div>Your socketId: {socketId}.</div>
-            <div>Your username: {username}. Your userId: {userId}</div>
+            <div>Your username: {username}. Your userId: {userId}. Your profile pic: <img src={imgUrl} /></div>
             <div>There are {count} users connected.</div>
-            <List arr={messages} user={username} userId={userId}/>
+            <List arr={messages} user={username} userId={userId} />
             {isLoggedIn ?
             <Button username={username} userId={userId} />
             : <h1>You need to log in before you can chat!</h1>

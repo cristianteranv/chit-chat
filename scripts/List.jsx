@@ -6,11 +6,11 @@ export function List(props){
         if (props.userId == item['userId']){
             return <ListItem key={index} text={item['message']} username={item['username']} styleClass="mine message"/>
         }
-        else if (item['usrname'] == "jokebot"){
+        else if (item['username'] == "jokebot"){
             return <ListItem key={index} text={item['message']} username={item['username']} styleClass="jokebot message"/>
         }
         else{
-            return <ListItem key={index} text={item['message']} username={item['username']} styleClass="yours message"/>
+            return <ListItem key={index} text={item['message']} username={item['username']} imgUrl={item['imgUrl']} styleClass="yours message"/>
         }
     })
     

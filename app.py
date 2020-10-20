@@ -11,9 +11,9 @@ import flask_socketio
 import models
 import re 
   
-def Find(string): 
+def findUrls(string): 
     regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
-    url = re.findall(regex, string)      
+    url = re.findall(regex, string)
     return [x[0] for x in url]
 
 
@@ -43,11 +43,10 @@ def push_new_user_to_db(name, auth_type, email, authId, imgUrl=None):
     user = models.Users.query.filter_by(name=name, email=email).first()
     if not user:
         print("adding new user")
-        print("auth type", auth_type, "models.authuser.google ", models.AuthUserType.GOOGLE)
         if auth_type == models.AuthUserType.GOOGLE:
-            db.session.add(models.Users(name, email, googleId = authId));
+            db.session.add(models.Users(name, email, imgUrl, googleId = authId));
         else:
-            db.session.add(models.Users(name, email, fbId = authId));
+            db.session.add(models.Users(name, email, imgUrl, fbId = authId));
         db.session.commit();
         return True
 #        emit_all_oauth_users(USERS_UPDATED_CHANNEL)
@@ -57,9 +56,9 @@ def push_new_user_to_db(name, auth_type, email, authId, imgUrl=None):
         #if not user.googleId and auth_type == google:  db.UPDATE.SET(googleId=authId)
         return False
 
-def emit_all_messages(channel): #TODO query imgUrl
+def emit_all_messages(channel): 
     allMessages = [ \
-        {'message': db_texts.text, 'userId' : db_users.id, 'username': db_users.name}\
+        {'message': db_texts.text, 'userId' : db_users.id, 'username': db_users.name, 'imgUrl': db_users.imgUrl if db_users.imgUrl else None}\
         for db_texts, db_users in \
         db.session.query(models.Texts,models.Users).filter(models.Texts.user == models.Users.id).order_by(models.Texts.date).all()\
         ]
@@ -75,7 +74,7 @@ def on_connect():
     global user_count
     socketio.emit('count', {'count': user_count})
     currSocketId = request.sid
-    print('Someone connected with id: ', currSocketId)
+    print('Someone connected with socketId: ', currSocketId)
     socketio.emit('connected', {
         'socketId': currSocketId
     }, room = currSocketId)
@@ -97,7 +96,7 @@ def on_new_google_user(data):  #Sends username and userId to client.
     print("Got an event for new google user input with data:", data)
     push_new_user_to_db(data['name'], models.AuthUserType.GOOGLE, data['email'], data['uid'], imgUrl=data['imgUrl'])
     user = models.Users.query.filter_by(name=data['name'], email=data['email']).first()
-    socketio.emit('send username', {'username': data['name'], 'userId': user.id}, room=data['socketId'])
+    socketio.emit('send username', {'username': data['name'], 'userId': user.id, 'imgUrl': data['imgUrl']}, room=data['socketId'])
 
 @socketio.on('new msg')
 def on_new_msg(data):
@@ -170,8 +169,19 @@ def on_new_msg(data):
             db.session.commit()
             emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
         
-    else:  
-        db.session.add( models.Texts( data["message"], data["userId"] ) );
+    else:
+        urls = findUrls(data["message"])
+        message = data["message"]
+        if urls:
+            for url in urls: #HTML ESCAPE
+                message = message.replace(url, '<a href="' + url + '" />')
+        print(message)
+        message_obj = {
+            MESSAGE: message,
+            IMG_URL_POSITIONS: [(0, 10), (22, 34)],
+            HYPERLINK_POSITIONS:,
+        }
+        db.session.add( models.Texts( message, data["userId"] ) );
         db.session.commit();
         emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
 
