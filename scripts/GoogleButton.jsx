@@ -11,18 +11,13 @@ export function GoogleButton(props) {
   
     function handleSubmit(response) {
         // TODO replace with name from oauth
-        console.log("Reached handle submit", response)
-        console.log("name?: ", response.nt.Ad)
-        console.log("email?: ", response.nt.Wt)
-        console.log("googleId?: ", response.googleId)
-        Socket.emit('googleAuth', { //send google unique id
-            'name': response.nt.Ad,
-            'email': response.nt.Wt,
+        Socket.emit('googleAuth', {
+            'name': response.profileObj.name,
+            'email': response.profileObj.email,
             'uid': response.googleId,
             'socketId': props.socketId,
-            'imgUrl': response.nt.JJ
+            'imgUrl': response.profileObj.imageUrl
         });
-        
         console.log('Sent the name, email, and authType to server!');
     }
 

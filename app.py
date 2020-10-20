@@ -9,12 +9,7 @@ import flask
 import flask_sqlalchemy
 import flask_socketio
 import models
-import re 
-  
-def findUrls(string): 
-    regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
-    url = re.findall(regex, string)
-    return [x[0] for x in url]
+import re
 
 
 ADDRESSES_RECEIVED_CHANNEL = 'messages received'
@@ -83,9 +78,9 @@ def on_connect():
 
 @socketio.on('disconnect')
 def on_disconnect():                #TODO HANDLE LOGOUT
-    # global user_count
-    # user_count -= 1
-    # socketio.emit('count', {'count': user_count})
+    global user_count
+    user_count -= 1
+    socketio.emit('count', {'count': user_count})
     print ('Someone disconnected!')
 
 @socketio.on('googleAuth')     #receives data from GoogleButton. Updates user count. Creates/Updates user row in db. 
@@ -170,18 +165,7 @@ def on_new_msg(data):
             emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
         
     else:
-        urls = findUrls(data["message"])
-        message = data["message"]
-        if urls:
-            for url in urls: #HTML ESCAPE
-                message = message.replace(url, '<a href="' + url + '" />')
-        print(message)
-        message_obj = {
-            MESSAGE: message,
-            IMG_URL_POSITIONS: [(0, 10), (22, 34)],
-            HYPERLINK_POSITIONS:,
-        }
-        db.session.add( models.Texts( message, data["userId"] ) );
+        db.session.add( models.Texts( data['message'], data["userId"] ) );
         db.session.commit();
         emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
 
