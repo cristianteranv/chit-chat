@@ -102,3 +102,30 @@ I would spend some time trying to organize it in a better way that is more reade
 to scroll the chat container to the bottom whenever a new message is sent. This was done client side whenever messages were received the code can be found in Content.jsx 
 inside function getNewAddresses. Finally, a know issue is that the "sent by" for each message looks horrible right now. I want to find a way to put the username below the 
 message bubble in a smaller font but did not have enough time to do it. This small font is also where the date/time the message was sent would go as well.
+
+#Milestone 2
+
+What are at least 2 technical issues you encountered with your project since Milestone 1?  
+
+In this milestone I didn't run into that many issues because there weren't as many things to implement as milestone 1.
+One of my technical issues difinitely was trying to figure out a way to render an image in a chat message amd making the URLs clickable. 
+At first I naively tried to parse the texts on the server side using python, recognize urls, and then manipulate the text string so that the url is properly put into
+a href element. However, when passing the message like that to the client side, the text printed out the html tag as part of the string instead of replacing the html tags 
+with actual tags. The way I worked around this was googling solutions and running into a react component called linkify. Linkify took care of replacing every url with a
+proper href tag. To handle the images, on the client side, I checked the last four characters of a text so that if an image extension is found, the text is taken and put into
+the src attribute for a img element. Doing this client side apparently was enough to have the image rendered.
+
+The next technical issue I ran into was definitely styling. I am terrible at it. I needed a way to display the profile picture inline next to the text message. 
+I spent a good amount of time googling solutions and in the end ended up just trying any styling attribute I could think would be helpful. In the end I changed the 
+flex orientation from column to row and that took care of that issue. However, this created another problem which was that the owner's messages (the ones that would be
+on the right side of the chat container) ended up right in the middle of the container instead of sticking to the right side of the chat div. The way I fixed this was
+googling again and not only searching "how do I do this" but also "trying .... is not working" and finally trying to read a little about the elements that were most relevant
+to fixing this issue at w3schools. In then I fixed the error by making the message container relative and changing the margin. Setting margin-left to auto seemed to be the final
+fix for my issue.
+
+
+What are two ways you would improve your project if you had time?
+If I had more time, I would probably look into how to make the styling better because its my biggest weakness. Additionally, I would like to be able to handle image urls
+that are in the middle of text instead of only being able to handle texts that are literally just the image url. On top of that, although it feel it would be extremely complicated,
+I'd like to know how to load several images in a single text message like whatsapp does. I would also have liked to implement more authorization methods but the other parts of 
+the project ended up taking too much time for me to do it.
