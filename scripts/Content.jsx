@@ -82,7 +82,6 @@ export function Content() {
     
     return (
         <div>
-            <h1>List of messages:</h1>
             <div>There are {count} users connected.</div>
             <List arr={messages} user={username} userId={userId} />
             {isLoggedIn ?
