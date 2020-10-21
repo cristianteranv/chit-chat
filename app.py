@@ -1,16 +1,8 @@
 # app.py
-import requests
 from os.path import join, dirname
 from dotenv import load_dotenv
 from flask import request
-import json
-import os
-import flask
-import flask_sqlalchemy
-import flask_socketio
-import models
-import re
-import datetime
+import json, os, flask, flask_sqlalchemy, flask_socketio, models, datetime, requests
 
 
 ADDRESSES_RECEIVED_CHANNEL = 'messages received'
@@ -45,27 +37,20 @@ def push_new_user_to_db(name, auth_type, email, authId, imgUrl=None):
             db.session.add(models.Users(name, email, imgUrl, fbId = authId));
         db.session.commit();
         return True
-#        emit_all_oauth_users(USERS_UPDATED_CHANNEL)
     else:
         print("user was already stored")
         #add new auth type if needed
         #if not user.googleId and auth_type == google:  db.UPDATE.SET(googleId=authId)
         return False
 
-def emit_all_messages(channel):                                                                         #.strftime("%b %d, %I:%M %p")
+def emit_all_messages(channel):
     allMessages = [ \
         {'message': db_texts.text, 'userId' : db_users.id, 'username': db_users.name, 'date':db_texts.date.strftime("%b %d, %I:%M %p"), 'imgUrl': db_users.imgUrl if db_users.imgUrl else None}\
         for db_texts, db_users in \
         db.session.query(models.Texts,models.Users).filter(models.Texts.user == models.Users.id).order_by(models.Texts.date).all()\
         ]
-#    print(allMessages[0]['date'])
     socketio.emit( channel, { 'allMessages': allMessages })
 
-# db.session.query(Deliverable.column1, BatchInstance.column2).\
-#     join(BatchInstance, Service, Supplier, SupplierUser). \
-#     filter(SupplierUser.username == str(current_user)).\
-#     order_by(Deliverable.created_time.desc()).all()
-    
 @socketio.on('connect')   #sends socketId to client and message history
 def on_connect():
     global user_count
@@ -79,7 +64,7 @@ def on_connect():
     
 
 @socketio.on('disconnect')
-def on_disconnect():                #TODO HANDLE LOGOUT
+def on_disconnect():
     global user_count
     user_count -= 1
     socketio.emit('count', {'count': user_count})
@@ -97,7 +82,6 @@ def on_new_google_user(data):  #Sends username and userId to client.
 
 @socketio.on('new msg')
 def on_new_msg(data):
-    print("Message \'{}\' received from: {} with userId: {}".format(data['message'], data['usrname'], data['userId']))
     #check the message for command
     message = data['message']
     if message.startswith("!!"):
@@ -106,11 +90,9 @@ def on_new_msg(data):
             db.session.add( models.Users(name = 'jokebot', email='jokebot'))
             db.session.commit()
             jokebot = models.Users.query.filter_by(name="jokebot").first()
-        #about, help, funtranslate, unrecognized command, some command, some api
         command = message[2:]
         if command == "Chuck":
             db.session.add( models.Texts( data["message"], data['userId'] ) );
-            #db.session.commit()
             url = "https://matchilling-chuck-norris-jokes-v1.p.rapidapi.com/jokes/random"
             headers = {
                 'x-rapidapi-host': "matchilling-chuck-norris-jokes-v1.p.rapidapi.com",
