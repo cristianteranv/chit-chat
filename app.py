@@ -10,6 +10,7 @@ import flask_sqlalchemy
 import flask_socketio
 import models
 import re
+import datetime
 
 
 ADDRESSES_RECEIVED_CHANNEL = 'messages received'
@@ -51,12 +52,13 @@ def push_new_user_to_db(name, auth_type, email, authId, imgUrl=None):
         #if not user.googleId and auth_type == google:  db.UPDATE.SET(googleId=authId)
         return False
 
-def emit_all_messages(channel): 
+def emit_all_messages(channel):                                                                         #.strftime("%b %d, %I:%M %p")
     allMessages = [ \
-        {'message': db_texts.text, 'userId' : db_users.id, 'username': db_users.name, 'imgUrl': db_users.imgUrl if db_users.imgUrl else None}\
+        {'message': db_texts.text, 'userId' : db_users.id, 'username': db_users.name, 'date':db_texts.date.strftime("%b %d, %I:%M %p"), 'imgUrl': db_users.imgUrl if db_users.imgUrl else None}\
         for db_texts, db_users in \
         db.session.query(models.Texts,models.Users).filter(models.Texts.user == models.Users.id).order_by(models.Texts.date).all()\
         ]
+#    print(allMessages[0]['date'])
     socketio.emit( channel, { 'allMessages': allMessages })
 
 # db.session.query(Deliverable.column1, BatchInstance.column2).\
