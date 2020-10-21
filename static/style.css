@@ -20,10 +20,24 @@ body {
     height: 12vh;
 }
 
+.profilePic{
+  max-width: 50px;
+  max-height: 50px;
+  float: left;
+}
+
+.inlineImage{
+  width: auto;
+  height: 300px;
+  object-fit: cover;
+  max-width:100%;
+  max-height:100%;
+}
+
 .messages {
-  margin-top: 30px;
+  margin-top: 10px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 
@@ -33,6 +47,7 @@ body {
   margin-top: 5px;
   margin-bottom: 5px;
   display: inline-block;
+  width: 45%;
 }
 
 .jokebot{
@@ -47,6 +62,7 @@ body {
   margin-right: 25%;
   background-color: #EEE;
   position: relative;
+  margin-left: 20px;
 }
 
 .yours .message {
@@ -81,8 +97,8 @@ body {
 .mine {
   align-items: flex-end;
   color: white;
-  margin-left: 25%;
-  background: rgb(0, 120, 254);
+  margin-left: auto;
+  background: rgb(0, 200, 254);
   position: relative;
   text-align: right;
 }
