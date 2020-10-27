@@ -27,6 +27,79 @@ db.app = app
 db.create_all()
 db.session.commit()
 
+def chuck(data, db, jokebot):
+    db.session.add( models.Texts( data["message"], data['userId'] ) );
+    url = "https://matchilling-chuck-norris-jokes-v1.p.rapidapi.com/jokes/random"
+    headers = {
+        'x-rapidapi-host': "matchilling-chuck-norris-jokes-v1.p.rapidapi.com",
+        'x-rapidapi-key': "17f5aa590cmshc9146e44a5c9835p18ab19jsn2ed7077f9dbc",
+        'accept': "application/json"
+    }
+    response = requests.request("GET", url, headers=headers)
+    joke = response.json()['value']
+    print(joke, jokebot.id)
+    db.session.add( models.Texts( joke, jokebot.id ) );
+    db.session.commit()
+    emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
+    
+def funtranslatee(data, db, jokebot):
+    db.session.add( models.Texts( data["message"], data['userId'] ) );
+    command = data["message"]
+    message = command.split()
+    message = " ".join(message[1:])
+    url = "https://api.funtranslations.com/translate/yoda.json"
+    response = requests.post('https://api.funtranslations.com/translate/yoda.json', data = {'text':message})
+    jokeMsg = ""
+    try:
+        jokeMsg = response.json()['contents']['translated']
+    except:
+        jokeMsg = "We seem to have ran out of funtranslations requests"
+        print("error with fun translate")
+    db.session.add( models.Texts( jokeMsg, jokebot.id ) );
+    db.session.commit()
+    emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
+
+def handleCommand(data, db):
+    message = data["message"]
+    jokebot = models.Users.query.filter_by(name="jokebot").first()
+    if not jokebot:
+        db.session.add( models.Users(name = 'jokebot', email='jokebot') )
+        db.session.commit()
+        jokebot = models.Users.query.filter_by(name="jokebot").first()
+    command = message[2:]
+    
+    if command == "Chuck":
+        chuck(data, db, jokebot)
+        
+    elif command.startswith("funtranslate"):
+        funtranslatee(data, db, jokebot)
+        
+    elif command == "about":
+        jokeMsg = "I'm jokebot. I'm here to help you have fun."
+        db.session.add( models.Texts( jokeMsg, jokebot.id ) );
+        db.session.commit()
+        emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
+    
+    elif command == "help":
+        jokeMsg = "The commands I currently support are: !!Chuck, !!funstranslate messageToBeTranslated, !!about, and !!clear"
+        db.session.add( models.Texts( jokeMsg, jokebot.id ) );
+        db.session.commit()
+        emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
+    
+    elif command == "clear":
+        try:
+            db.session.query(models.Texts).delete()
+            db.session.commit()
+            emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
+        except:
+            print("error when clearing texts table")
+    
+    else:
+        jokeMsg = "Beep boop I haven't been programmed to respond to that command beep boop."
+        db.session.add( models.Texts( jokeMsg, jokebot.id ) );
+        db.session.commit()
+        emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
+
 def push_new_user_to_db(name, auth_type, email, authId, imgUrl=None):
     user = models.Users.query.filter_by(name=name, email=email).first()
     if not user:
@@ -50,6 +123,8 @@ def emit_all_messages(channel):
         db.session.query(models.Texts,models.Users).filter(models.Texts.user == models.Users.id).order_by(models.Texts.date).all()\
         ]
     socketio.emit( channel, { 'allMessages': allMessages })
+
+
 
 @socketio.on('connect')   #sends socketId to client and message history
 def on_connect():
@@ -85,69 +160,7 @@ def on_new_msg(data):
     #check the message for command
     message = data['message']
     if message.startswith("!!"):
-        jokebot = models.Users.query.filter_by(name="jokebot").first()
-        if not jokebot:
-            db.session.add( models.Users(name = 'jokebot', email='jokebot'))
-            db.session.commit()
-            jokebot = models.Users.query.filter_by(name="jokebot").first()
-        command = message[2:]
-        if command == "Chuck":
-            db.session.add( models.Texts( data["message"], data['userId'] ) );
-            url = "https://matchilling-chuck-norris-jokes-v1.p.rapidapi.com/jokes/random"
-            headers = {
-                'x-rapidapi-host': "matchilling-chuck-norris-jokes-v1.p.rapidapi.com",
-                'x-rapidapi-key': "17f5aa590cmshc9146e44a5c9835p18ab19jsn2ed7077f9dbc",
-                'accept': "application/json"
-            }
-            response = requests.request("GET", url, headers=headers)
-            joke = response.json()['value']
-            print(joke, jokebot.id)
-            db.session.add( models.Texts( joke, jokebot.id ) );
-            db.session.commit()
-            emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
-        
-        elif command.startswith("funtranslate"):
-            db.session.add( models.Texts( data["message"], data['userId'] ) );
-            message = command.split()
-            message = " ".join(message[1:])
-            url = "https://api.funtranslations.com/translate/yoda.json"
-            response = requests.post('https://api.funtranslations.com/translate/yoda.json', data = {'text':message})
-            jokeMsg = ""
-            try:
-                jokeMsg = response.json()['contents']['translated']
-            except:
-                jokeMsg = "We seem to have ran out of funtranslations requests"
-                print("error with fun translate")
-            db.session.add( models.Texts( jokeMsg, jokebot.id ) );
-            db.session.commit()
-            emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
-            
-        elif command == "about":
-            jokeMsg = "I'm jokebot. I'm here to help you have fun."
-            db.session.add( models.Texts( jokeMsg, jokebot.id ) );
-            db.session.commit()
-            emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
-        
-        elif command == "help":
-            jokeMsg = "The commands I currently support are: !!Chuck, !!funstranslate messageToBeTranslated, !!about, and !!clear"
-            db.session.add( models.Texts( jokeMsg, jokebot.id ) );
-            db.session.commit()
-            emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
-        
-        elif command == "clear":
-            try:
-                db.session.query(models.Texts).delete()
-                db.session.commit()
-                emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
-            except:
-                print("error when clearing texts table")
-        
-        else:
-            jokeMsg = "Beep boop I haven't been programmed to respond to that command beep boop."
-            db.session.add( models.Texts( jokeMsg, jokebot.id ) );
-            db.session.commit()
-            emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
-        
+        handleCommand(data, db)
     else:
         db.session.add( models.Texts( data['message'], data["userId"] ) );
         db.session.commit();

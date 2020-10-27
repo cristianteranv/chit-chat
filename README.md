@@ -103,7 +103,7 @@ to scroll the chat container to the bottom whenever a new message is sent. This 
 inside function getNewAddresses. Finally, a know issue is that the "sent by" for each message looks horrible right now. I want to find a way to put the username below the 
 message bubble in a smaller font but did not have enough time to do it. This small font is also where the date/time the message was sent would go as well.
 
-#Milestone 2
+# Milestone 2
 
 What are at least 2 technical issues you encountered with your project since Milestone 1?  
 
