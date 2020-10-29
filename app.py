@@ -119,16 +119,12 @@ def push_new_user_to_db(name, auth_type, email, auth_id, img_url=None):
     """ Checks if a user exists with the parameters given. If not, it creates it """
     user = models.Users.query.filter_by(name=name, email=email).first()
     if not user:
-        print("adding new user")
         if auth_type == models.AuthUserType.GOOGLE:
             db.session.add(models.Users(name, email, img_url, google_id=auth_id))
         else:
             db.session.add(models.Users(name, email, img_url, fb_id=auth_id))
         db.session.commit()
         return True
-    print("user was already stored")
-    # add new auth type if needed
-    # if not user.googleId and auth_type == google:  db.UPDATE.SET(googleId=authId)
     return False
 
 
@@ -156,7 +152,6 @@ def on_connect():
     global USER_COUNT
     socketio.emit("count", {"count": USER_COUNT})
     curr_socket_id = flask.request.sid
-    print("Someone connected with socketId: ", curr_socket_id)
     socketio.emit("connected", {"socketId": curr_socket_id}, room=curr_socket_id)
     emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
 
@@ -167,7 +162,6 @@ def on_disconnect():
     global USER_COUNT
     USER_COUNT -= 1
     socketio.emit("count", {"count": USER_COUNT})
-    print("Someone disconnected!")
 
 
 @socketio.on("googleAuth")
@@ -176,7 +170,6 @@ def on_new_google_user(data):
     global USER_COUNT
     USER_COUNT += 1
     socketio.emit("count", {"count": USER_COUNT})
-    print("Got an event for new google user input with data:", data)
     push_new_user_to_db(
         data["name"],
         models.AuthUserType.GOOGLE,
