@@ -9,6 +9,10 @@
   g) `pip install -U Flask-SQLAlchemy`
   h) `pip install python-dotenv`
   i) `pip install flask`
+  j) `npm install react-router-dom`
+  k) `npm install --save history`
+  l) `npm install --save react-chat-popup`
+  m) `npm install -g npm-install-peers`
 
 :warning: :warning: :warning: If you see any error messages, make sure you use `sudo pip` or `sudo npm`. If it says "pip cannot be found", run `which pip` and use `sudo [path that was just outputted from running which pip] install [thing you want to install]` :warning: :warning: :warning:    
 2. If you already have psql set up, **SKIP THE REST OF THE STEPS AND JUST DO THE FOLLOWING COMMAND**:   
