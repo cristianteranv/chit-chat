@@ -28,10 +28,10 @@ db = flask_sqlalchemy.SQLAlchemy(app)
 db.init_app(app)
 db.app = app
 
-
+import models
 db.create_all()
 db.session.commit()
-import models
+
 
 def chuck(data, jokebot_id):
     """ Requests a Chuck Norris joke through Rapid API and sends as message """
