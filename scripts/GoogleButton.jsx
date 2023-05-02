@@ -5,11 +5,13 @@ import GoogleLogin from 'react-google-login'
 
 export function GoogleButton (props) {
   const responseGoogle = (response) => {
-    console.log('responseGoogle: ', response)
+    console.log('Auth failure. Google response: ', response)
   }
 
   function handleSubmit (response) {
     // TODO replace with name from oauth
+    console.log('Got response: ', response)
+    console.log(`Sending the name ${response.profileObj.name}, email ${response.profileObj.email}, uid ${response.googleId}, and imgurl ${response.profileObj.imageUrl} to server!`)
     Socket.emit('googleAuth', {
       name: response.profileObj.name,
       email: response.profileObj.email,
@@ -17,7 +19,7 @@ export function GoogleButton (props) {
       socketId: props.socketId,
       imgUrl: response.profileObj.imageUrl
     })
-    console.log('Sent the name, email, and authType to server!')
+    console.log(`Sent the name ${response.profileObj.name}, email ${response.profileObj.email}, uid ${response.googleId}, and imgurl ${response.profileObj.imageUrl} to server!`)
   }
 
   return <GoogleLogin
