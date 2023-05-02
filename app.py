@@ -7,7 +7,6 @@ import flask_sqlalchemy
 import flask_socketio
 import requests
 from dotenv import load_dotenv
-import models
 
 
 ADDRESSES_RECEIVED_CHANNEL = "messages received"
@@ -32,7 +31,7 @@ db.app = app
 with app.app_context():
     db.create_all()
     db.session.commit()
-
+import models
 
 def chuck(data, jokebot_id):
     """ Requests a Chuck Norris joke through Rapid API and sends as message """
