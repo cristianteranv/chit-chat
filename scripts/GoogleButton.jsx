@@ -10,7 +10,7 @@ export function GoogleButton (props) {
 
   function handleSubmit (response) {
     // TODO replace with name from oauth
-    console.log('Got response: ', response)
+    console.log('Got response:', response)
     console.log(`Sending the name ${response.profileObj.name}, email ${response.profileObj.email}, uid ${response.googleId}, and imgurl ${response.profileObj.imageUrl} to server!`)
     Socket.emit('googleAuth', {
       name: response.profileObj.name,
