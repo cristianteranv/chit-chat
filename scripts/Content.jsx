@@ -83,7 +83,7 @@ export function Content () {
             <List arr={messages} user={username} userId={userId} />
             {isLoggedIn
               ? <Button username={username} userId={userId} />
-              : <div><h1>You need to log in before you can chat!</h1><GoogleButton socketId={socketId} /></div>
+              : <div><h1>You need to log in before you can chat!</h1><GoogleButton setlogin={setLogin} socketId={socketId} /></div>
             }
         </div>
   )
