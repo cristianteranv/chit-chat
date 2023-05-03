@@ -11,6 +11,7 @@ export function GoogleButton (props) {
   function handleSubmit (response) {
     // TODO replace with name from oauth
     console.log('Got response:', response)
+    props.setlogin(true)
     Socket.emit('googleAuth', {
       name: response.profileObj.name,
       email: response.profileObj.email,
