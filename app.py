@@ -31,6 +31,7 @@ db.app = app
 import models
 db.create_all()
 db.session.commit()
+db.engine.dispose()
 
 
 def chuck(data, jokebot_id):
