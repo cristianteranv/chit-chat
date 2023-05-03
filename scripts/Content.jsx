@@ -79,7 +79,7 @@ export function Content () {
 
   return (
         <div>
-            <div>BLABLABLLABLA{count} users connected.</div>
+            <div>ASDF{count} users connected.</div>
             <List arr={messages} user={username} userId={userId} />
             {isLoggedIn
               ? <Button username={username} userId={userId} />
