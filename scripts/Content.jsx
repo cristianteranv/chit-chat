@@ -29,6 +29,7 @@ export function Content () {
 
   function getUsername () {
     React.useEffect(() => {
+      console.log("getUsername useEffect")
       Socket.on('send username', updateUsername)
       return () => {
         Socket.off('send username', updateUsername)
@@ -37,6 +38,7 @@ export function Content () {
   }
 
   function updateUsername (data) {
+    console.log("update username", data)
     setUsername(data.username)
     setUserId(data.userId)
     setLogin(true)
