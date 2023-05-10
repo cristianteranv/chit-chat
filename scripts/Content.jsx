@@ -46,6 +46,7 @@ export function Content () {
 
   function getSocketId () {
     React.useEffect(() => {
+      console.log('getsocketid useffect')
       Socket.on('connected', updateSocketId)
       return () => {
         Socket.off('connected', updateSocketId)
@@ -60,6 +61,7 @@ export function Content () {
 
   function getNewAddresses () {
     React.useEffect(() => {
+      console.log('getNewAddresses useffect')
       Socket.on('messages received', updateAddresses)
       var elem = document.getElementById('chatContainer')
       elem.scrollTop = elem.scrollHeight
@@ -81,7 +83,7 @@ export function Content () {
 
   return (
         <div>
-            <div>ASDF{count} users connected.</div>
+            <div>There are {count} users connected.</div>
             <List arr={messages} user={username} userId={userId} />
             {isLoggedIn
               ? <Button username={username} userId={userId} />
