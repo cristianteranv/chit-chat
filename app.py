@@ -195,6 +195,7 @@ def on_new_msg(data):
     if message.startswith("!!"):
         handle_command(data)
     else:
+        print("at new msg:", data)
         db.session.add(models.Texts(data["message"], data["userId"]))
         db.session.commit()
         emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
