@@ -191,11 +191,13 @@ def on_new_google_user(data):
 @socketio.on("new msg")
 def on_new_msg(data):
     """ Checks if messages are commands, adds user messages to db and sends to clients """
+    print("at new msg:", data)
     message = data["message"]
     if message.startswith("!!"):
+        print("startswith !!")
         handle_command(data)
     else:
-        print("at new msg:", data)
+        print("else")
         db.session.add(models.Texts(data["message"], data["userId"]))
         db.session.commit()
         emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
