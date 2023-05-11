@@ -43,7 +43,6 @@ export function Content () {
       Socket.off('send username', updateUsername)
     }
   })
-  Socket.on('send username', updateUsername)
 
   function updateUsername (data) {
     console.log("update username", data)
@@ -63,7 +62,7 @@ export function Content () {
   }
 
   function updateSocketId (data) {
-    // console.log("Received user name from server: ", data['usrname']);
+    console.log("triggered socket.on connected");
     setSocketId(data.socketId)
   }
 
@@ -94,8 +93,13 @@ export function Content () {
             <div>There are {count} users connected.</div>
             <List arr={messages} user={username} userId={userId} />
             {isLoggedIn
-              ? <Button username={username} userId={userId} />
-              : <div><h1>You need to log in before you can chat!</h1><GoogleButton setlogin={setLogin} socketId={socketId} /></div>
+              ? 
+                <Button username={username} userId={userId} />
+              : 
+              <div>
+                <h1>You need to log in before you can chat!</h1>
+                <GoogleButton setlogin={setLogin} socketId={socketId} />
+              </div>
             }
         </div>
   )

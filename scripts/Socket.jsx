@@ -1,3 +1,3 @@
-import io from 'socket.io-client';
+import * as SocketIO from 'socket.io-client'
 
-export const Socket = io('http://localhost:8080')
+export var Socket = SocketIO.connect()
