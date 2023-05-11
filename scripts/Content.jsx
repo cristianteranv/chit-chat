@@ -36,13 +36,6 @@ export function Content () {
       }
     })
   }
-  React.useEffect(() => {
-    console.log("outside function getUsername useEffect")
-    Socket.on('send username', updateUsername)
-    return () => {
-      Socket.off('send username', updateUsername)
-    }
-  })
 
   function updateUsername (data) {
     console.log("update username", data)
