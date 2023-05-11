@@ -181,6 +181,7 @@ def on_new_google_user(data):
         img_url=data["imgUrl"],
     )
     user = models.Users.query.filter_by(name=data["name"], email=data["email"]).first()
+    print("sending username", data)
     socketio.emit(
         "send username",
         {"username": data["name"], "userId": user.id, "imgUrl": data["imgUrl"]},
