@@ -14,7 +14,7 @@ USER_COUNT = 0
 
 app = flask.Flask(__name__)
 
-socketio = flask_socketio.SocketIO(app,logger=True, engineio_logger=True)
+socketio = flask_socketio.SocketIO(app,ping_timeout=5, ping_interval=25,logger=True, engineio_logger=True)
 socketio.init_app(app, cors_allowed_origins="*")
 
 dotenv_path = join(dirname(__file__), "sql.env")
