@@ -172,6 +172,7 @@ def on_new_google_user(data):
     """ Handles the data received from a client-side google log in """
     global USER_COUNT
     USER_COUNT += 1
+    print("at google auth:", data)
     socketio.emit("count", {"count": USER_COUNT})
     push_new_user_to_db(
         data["name"],
