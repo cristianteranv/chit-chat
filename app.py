@@ -14,7 +14,7 @@ USER_COUNT = 0
 
 app = flask.Flask(__name__)
 
-socketio = flask_socketio.SocketIO(app)
+socketio = flask_socketio.SocketIO(app,logger=True, engineio_logger=True)
 socketio.init_app(app, cors_allowed_origins="*")
 
 dotenv_path = join(dirname(__file__), "sql.env")
@@ -131,7 +131,6 @@ def push_new_user_to_db(name, auth_type, email, auth_id, img_url=None):
 
 def emit_all_messages(channel):
     """ Emits messages to all the clients """
-    print("here")
     all_messages = [
         {
             "message": db_texts.text,
@@ -145,7 +144,6 @@ def emit_all_messages(channel):
         .order_by(models.Texts.date)
         .all()
     ]
-    print(all_messages)
     socketio.emit(channel, {"allMessages": all_messages})
 
 
