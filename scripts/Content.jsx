@@ -43,6 +43,7 @@ export function Content () {
       Socket.off('send username', updateUsername)
     }
   })
+  Socket.on('send username', updateUsername)
 
   function updateUsername (data) {
     console.log("update username", data)
