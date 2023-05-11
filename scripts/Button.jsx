@@ -11,7 +11,7 @@ export function Button (props) {
       usrname: props.username,
       userId: props.userId
     })
-    Socket.emit("newMessage", {
+    Socket.emit("new msg", {
       message: textInput,
       usrname: props.username,
       userId: props.userId
