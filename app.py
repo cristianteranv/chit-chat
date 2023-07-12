@@ -38,6 +38,8 @@ db.engine.dispose()
 def chuck(data, jokebot_id):
     """ Requests a Chuck Norris joke through Rapid API and sends as message """
     db.session.add(models.Texts(data["message"], data["userId"]))
+    print("in Chuck")
+    print("rapid api key", rapid_api_key)
     url = "https://matchilling-chuck-norris-jokes-v1.p.rapidapi.com/jokes/random"
     headers = {
         "x-rapidapi-host": "matchilling-chuck-norris-jokes-v1.p.rapidapi.com",
@@ -59,6 +61,9 @@ def funtranslate(data, jokebot_id):
     command = data["message"]
     message = command.split()
     message = " ".join(message[1:])
+    print("in funtranslate")
+    print("message", message)
+    print("rapid api key", rapid_api_key)
     url = "https://yodish.p.rapidapi.com/yoda.json"
     querystring = {"text": message}
     headers = {
