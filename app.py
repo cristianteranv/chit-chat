@@ -206,6 +206,7 @@ def on_new_google_user(data):
 @socketio.on("new msg")
 def on_new_msg(data):
     """ Checks if messages are commands, adds user messages to db and sends to clients """
+    print("in new msg")
     print("at new msg:", data)
     message = data["message"]
     if message.startswith("!!"):
