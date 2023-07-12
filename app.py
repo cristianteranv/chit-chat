@@ -93,11 +93,14 @@ def handle_command(data):
         db.session.commit()
         jokebot = models.Users.query.filter_by(name="jokebot").first()
     command = message[2:]
+    print("command", command)
 
     if command == "Chuck":
+        print("in Chuck if")
         chuck(data, jokebot.id)
 
     elif command.startswith("funtranslate"):
+        print("in funtranslate if")
         funtranslate(data, jokebot.id)
 
     elif command == "about":
