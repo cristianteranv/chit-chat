@@ -47,8 +47,7 @@ def chuck(data, jokebot_id):
         "x-rapidapi-host": "matchilling-chuck-norris-jokes-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers)
-    print(response.json)
-    print(response)
+    print(response.json())
     joke = response.json()["value"]
     db.session.add(models.Texts(joke, jokebot_id))
     db.session.commit()
@@ -73,7 +72,6 @@ def funtranslate(data, jokebot_id):
     response = requests.post(url, headers=headers, params=querystring)
     joke_msg = ""
     try:
-        print("funtranslate response", response)
         print("funtranslate response.json", response.json())
         joke_msg = response.json()["contents"]["translated"]
     except:
