@@ -44,6 +44,8 @@ def chuck(data, jokebot_id):
         "accept": "application/json",
     }
     response = requests.request("GET", url, headers=headers)
+    print(response.json)
+    print(response)
     joke = response.json()["value"]
     db.session.add(models.Texts(joke, jokebot_id))
     db.session.commit()
@@ -61,6 +63,8 @@ def funtranslate(data, jokebot_id):
     )
     joke_msg = ""
     try:
+        print("funtranslate response", response)
+        print("funtranslate response.json", response.json())
         joke_msg = response.json()["contents"]["translated"]
     except:
         joke_msg = "We seem to have ran out of funtranslations requests"
