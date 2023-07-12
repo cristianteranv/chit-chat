@@ -14,7 +14,7 @@ USER_COUNT = 0
 
 app = flask.Flask(__name__)
 
-socketio = flask_socketio.SocketIO(app,logger=True, engineio_logger=True)
+socketio = flask_socketio.SocketIO(app,logger=False, engineio_logger=False)
 socketio.init_app(app, cors_allowed_origins="*")
 
 dotenv_path = join(dirname(__file__), "sql.env")
@@ -42,9 +42,9 @@ def chuck(data, jokebot_id):
     print("rapid api key", rapid_api_key)
     url = "https://matchilling-chuck-norris-jokes-v1.p.rapidapi.com/jokes/random"
     headers = {
-        "x-rapidapi-host": "matchilling-chuck-norris-jokes-v1.p.rapidapi.com",
-        "x-rapidapi-key": rapid_api_key,
         "accept": "application/json",
+        "x-rapidapi-key": rapid_api_key,
+        "x-rapidapi-host": "matchilling-chuck-norris-jokes-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers)
     print(response.json)
@@ -187,7 +187,6 @@ def on_new_google_user(data):
     """ Handles the data received from a client-side google log in """
     global USER_COUNT
     USER_COUNT += 1
-    print("at google auth:", data)
     socketio.emit("count", {"count": USER_COUNT})
     push_new_user_to_db(
         data["name"],
@@ -197,7 +196,6 @@ def on_new_google_user(data):
         img_url=data["imgUrl"],
     )
     user = models.Users.query.filter_by(name=data["name"], email=data["email"]).first()
-    print("sending username", data)
     socketio.emit(
         "send username",
         {"username": data["name"], "userId": user.id, "imgUrl": data["imgUrl"]},
@@ -214,7 +212,7 @@ def on_new_msg(data):
         print("startswith !!")
         handle_command(data)
     else:
-        print("else")
+        print("does not start with !!")
         db.session.add(models.Texts(data["message"], data["userId"]))
         db.session.commit()
         emit_all_messages(ADDRESSES_RECEIVED_CHANNEL)
