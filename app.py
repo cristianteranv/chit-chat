@@ -21,6 +21,7 @@ dotenv_path = join(dirname(__file__), "sql.env")
 load_dotenv(dotenv_path)
 
 database_uri = os.getenv("DATABASE_URL")
+rapid_api_key = os.getenv("RAPID_API_KEY")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
 
@@ -40,7 +41,7 @@ def chuck(data, jokebot_id):
     url = "https://matchilling-chuck-norris-jokes-v1.p.rapidapi.com/jokes/random"
     headers = {
         "x-rapidapi-host": "matchilling-chuck-norris-jokes-v1.p.rapidapi.com",
-        "x-rapidapi-key": "17f5aa590cmshc9146e44a5c9835p18ab19jsn2ed7077f9dbc",
+        "x-rapidapi-key": rapid_api_key,
         "accept": "application/json",
     }
     response = requests.request("GET", url, headers=headers)
@@ -58,9 +59,13 @@ def funtranslate(data, jokebot_id):
     command = data["message"]
     message = command.split()
     message = " ".join(message[1:])
-    response = requests.post(
-        "https://api.funtranslations.com/translate/yoda.json", data={"text": message}
-    )
+    url = "https://yodish.p.rapidapi.com/yoda.json"
+    querystring = {"text": message}
+    headers = {
+        "X-RapidAPI-Key": rapid_api_key,
+        "X-RapidAPI-Host": "yodish.p.rapidapi.com"
+    }
+    response = requests.post(url, headers=headers, params=querystring)
     joke_msg = ""
     try:
         print("funtranslate response", response)
